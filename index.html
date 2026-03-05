@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CapEx Equipment Control System | FY2025</title>
+    <link rel="stylesheet" href="./css/styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+<div id="loading-overlay">
+    <div class="loading-spinner"></div>
+    <div class="loading-text">Loading Equipment Data…</div>
+</div>
+
+<!-- ── NAVIGATION ─────────────────────────────────────────────────── -->
+<nav class="nav-header">
+    <div class="nav-container">
+        <div class="nav-brand">
+            <div class="nav-logo">NEXUS</div>
+            <div class="nav-divider"></div>
+            <div class="nav-system">CapEx Equipment Control System</div>
+        </div>
+        <div class="nav-tabs">
+            <button class="nav-tab active"  onclick="showPage('overview',       this)">Executive Overview</button>
+            <button class="nav-tab"         onclick="showPage('registry',       this)">Equipment Registry</button>
+            <button class="nav-tab"         onclick="showPage('early',          this)">Early Engagement</button>
+            <button class="nav-tab"         onclick="showPage('capital',        this)">Capital Forecast</button>
+            <button class="nav-tab"         onclick="showPage('oem',            this)">OEM Deployment</button>
+            <button class="nav-tab"         onclick="showPage('capitalization', this)">Capitalization</button>
+            <button class="nav-tab"         onclick="showPage('forecast',       this)">Demand Modeling</button>
+            <button class="nav-tab"         onclick="showPage('approvals',      this)">Approvals</button>
+        </div>
+        <div class="nav-actions">
+            <button class="nav-btn" id="btn-export">Export CSV</button>
+            <button class="nav-btn primary" onclick="location.reload()">Refresh</button>
+        </div>
+    </div>
+</nav>
+
+<!-- ── GLOBAL FILTERS ─────────────────────────────────────────────── -->
+<div class="filter-bar">
+    <div class="filter-container">
+        <div class="filter-group" style="flex:0.6">
+            <span class="filter-label">Fiscal Year</span>
+            <select id="filter-fy"><option value="FY2025">FY2025</option><option value="FY2026">FY2026</option></select>
+        </div>
+        <div class="filter-group" style="flex:0.8">
+            <span class="filter-label">Period</span>
+            <select id="filter-period">
+                <option>Year to Date</option><option>Q1 2025</option><option>Q2 2025</option><option>Q3 2025</option><option>Q4 2025</option>
+            </select>
+        </div>
+        <div class="filter-group" style="flex:1.1">
+            <span class="filter-label">Manufacturing Site</span>
+            <select id="filter-site"></select>
+        </div>
+        <div class="filter-group" style="flex:0.8">
+            <span class="filter-label">Region</span>
+            <select id="filter-region"></select>
+        </div>
+        <div class="filter-group" style="flex:1.0">
+            <span class="filter-label">Tool Category</span>
+            <select id="filter-type"></select>
+        </div>
+        <div class="filter-group" style="flex:0.8">
+            <span class="filter-label">Program</span>
+            <select id="filter-program"></select>
+        </div>
+        <div class="filter-group" style="flex:0.8">
+            <span class="filter-label">CapEx Status</span>
+            <select id="filter-status"></select>
+        </div>
+        <div class="filter-group" style="flex:0.8">
+            <span class="filter-label">OEM Vendor</span>
+            <select id="filter-vendor"></select>
+        </div>
+        <div class="filter-group" style="flex:0.5">
+            <span class="filter-label">Phase</span>
+            <select id="filter-phase">
+                <option value="">All Phases</option><option value="EVT">EVT</option><option value="DVT">DVT</option><option value="PVT">PVT</option>
+            </select>
+        </div>
+        <div class="filter-group" style="flex:0.5">
+            <span class="filter-label">Risk</span>
+            <select id="filter-risk">
+                <option value="">All Risk</option><option value="Low">Low</option><option value="Medium">Medium</option><option value="High">High</option>
+            </select>
+        </div>
+        <div class="filter-actions">
+            <button class="filter-btn" id="btn-reset-filters">Reset</button>
+            <button class="filter-btn" id="btn-apply-filters" style="background:var(--text-primary);color:white;">Apply</button>
+        </div>
+    </div>
+</div>
+
+<main class="dashboard">
+<div id="loading-error" style="display:none;padding:40px;text-align:center;">
+    <p style="font-family:var(--font-serif);font-size:18px;color:var(--text-secondary);">Unable to load equipment data. Ensure <code>data/equipment_data.xlsx</code> is present.</p>
+</div>
+
+<!-- ================================================================ -->
+<!-- PAGE 1 · EXECUTIVE OVERVIEW                                       -->
+<!-- ================================================================ -->
+<div id="overview" class="page active">
+    <header class="exec-header">
+        <h1 class="exec-title">Equipment Portfolio Executive Overview</h1>
+        <p class="exec-subtitle">FY2025 CapEx portfolio monitoring across global semiconductor manufacturing sites. Real-time capital efficiency, deployment status, and risk visibility powered by live equipment dataset.</p>
+        <div class="exec-meta">
+            <span>Report Date: Dec 31, 2025</span>
+            <span>Prepared by: CapEx Program Management Office</span>
+            <span>Classification: Executive Level</span>
+            <span>Portfolio Lead: Senior CapEx PM</span>
+        </div>
+    </header>
+
+    <!-- 8 KPIs -->
+    <div class="kpi-grid">
+        <div class="kpi-card">
+            <div class="kpi-label">Total CapEx Portfolio</div>
+            <div class="kpi-value neutral" id="kpi-total-budget">—</div>
+            <div class="kpi-context">Board approved budget</div>
+        </div>
+        <div class="kpi-card success">
+            <div class="kpi-label">Capital Efficiency Gain</div>
+            <div class="kpi-value positive" id="kpi-efficiency-gain">—</div>
+            <div class="kpi-context">Reuse + consolidation</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-label">Total Tools</div>
+            <div class="kpi-value neutral" id="kpi-total-tools">—</div>
+            <div class="kpi-context">Active portfolio</div>
+        </div>
+        <div class="kpi-card success">
+            <div class="kpi-label">AIS Capitalized</div>
+            <div class="kpi-value positive" id="kpi-ais-complete">—</div>
+            <div class="kpi-context">Tools fully capitalized</div>
+        </div>
+        <div class="kpi-card warning">
+            <div class="kpi-label">Tools Delayed</div>
+            <div class="kpi-value negative" id="kpi-delayed">—</div>
+            <div class="kpi-context">Requires escalation</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-label">Actual Spend</div>
+            <div class="kpi-value neutral" id="kpi-total-actual">—</div>
+            <div class="kpi-context">YTD actuals</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-label">Deploy Completion</div>
+            <div class="kpi-value neutral" id="kpi-deploy-pct">—</div>
+            <div class="kpi-context">Operational + qualified</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-label">Avg Utilization</div>
+            <div class="kpi-value neutral" id="kpi-avg-util">—</div>
+            <div class="kpi-context">Target: ≥75%</div>
+        </div>
+    </div>
+
+    <!-- Row 1: Trajectory + Attention table -->
+    <div class="grid grid-asym" style="margin-bottom:16px;">
+        <div class="card">
+            <div class="card-header">
+                <span class="card-title">Deployment Trajectory vs. Plan</span>
+                <span class="card-subtitle">Cumulative tools deployed 2025</span>
+            </div>
+            <div class="card-body"><div class="chart-wrapper"><canvas id="trajectoryChart"></canvas></div></div>
+        </div>
+        <div class="card">
+            <div class="card-header"><span class="card-title">Tools Requiring Attention</span></div>
+            <div class="card-body" style="padding:0;">
+                <table class="data-table">
+                    <thead><tr><th>Tool / Site</th><th>Issue</th><th>Status</th></tr></thead>
+                    <tbody id="attention-tbody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Row 2: 3 charts -->
+    <div class="grid grid-3" style="margin-bottom:16px;">
+        <div class="card">
+            <div class="card-header"><span class="card-title">Equipment by Site</span></div>
+            <div class="card-body"><div class="chart-wrapper"><canvas id="bySiteChart"></canvas></div></div>
+        </div>
+        <div class="card">
+            <div class="card-header"><span class="card-title">CapEx by Tool Type</span></div>
+            <div class="card-body"><div class="chart-wrapper"><canvas id="byTypeChart"></canvas></div></div>
+        </div>
+        <div class="card">
+            <div class="card-header"><span class="card-title">Risk Distribution</span></div>
+            <div class="card-body"><div class="chart-wrapper"><canvas id="riskDistChart"></canvas></div></div>
+        </div>
+    </div>
+
+    <!-- Row 3: Portfolio summary stats -->
+    <div class="grid grid-3">
+        <div class="card">
+            <div class="card-header"><span class="card-title">Phase Breakdown</span><span class="card-subtitle">Tools by NPI phase</span></div>
+            <div class="card-body" style="padding:0;" id="overview-phase-table">
+                <table class="data-table">
+                    <thead><tr><th>Phase</th><th class="numeric">Tools</th><th class="numeric">Budget</th><th>Completion</th><th>Risk</th></tr></thead>
+                    <tbody id="overview-phase-tbody"></tbody>
+                </table>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header"><span class="card-title">Top Programs by Spend</span></div>
+            <div class="card-body" style="padding:0;">
+                <table class="data-table">
+                    <thead><tr><th>Program</th><th class="numeric">Actual</th><th class="numeric">Budget</th><th>Progress</th></tr></thead>
+                    <tbody id="overview-program-tbody"></tbody>
+                </table>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header"><span class="card-title">Regional Split</span></div>
+            <div class="card-body" style="padding:0;" id="overview-region-tbody-wrap">
+                <table class="data-table">
+                    <thead><tr><th>Region</th><th class="numeric">Tools</th><th class="numeric">Budget</th><th>Share</th></tr></thead>
+                    <tbody id="overview-region-tbody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ================================================================ -->
+<!-- PAGE 2 · EQUIPMENT REGISTRY                                       -->
+<!-- ================================================================ -->
+<div id="registry" class="page">
+    <header class="exec-header">
+        <h1 class="exec-title">Equipment Registry — Tool-Level Control</h1>
+        <p class="exec-subtitle">Complete lifecycle tracking of all semiconductor tools across global manufacturing sites. Full CapEx ownership from demand identification through AIS capitalization.</p>
+    </header>
+
+    <div class="kpi-grid-4" style="margin-bottom:16px;">
+        <div class="kpi-card"><div class="kpi-label">Total Tools in Registry</div><div class="kpi-value neutral" id="reg-kpi-total">—</div><div class="kpi-context" id="reg-kpi-pct-op">Across all sites</div></div>
+        <div class="kpi-card success"><div class="kpi-label">Operational</div><div class="kpi-value positive" id="reg-kpi-operational">—</div><div class="kpi-context">AIS Capitalized + Active</div></div>
+        <div class="kpi-card warning"><div class="kpi-label">In Pipeline</div><div class="kpi-value negative" id="reg-kpi-pipeline">—</div><div class="kpi-context">PO → Qualification</div></div>
+        <div class="kpi-card danger"><div class="kpi-label">Delayed / At Risk</div><div class="kpi-value danger" id="reg-kpi-delayed">—</div><div class="kpi-context">Requires escalation</div></div>
+    </div>
+
+    <!-- Summary metrics row above the table -->
+    <div class="grid grid-3" style="margin-bottom:16px;">
+        <div class="card">
+            <div class="card-header"><span class="card-title">Status Distribution</span></div>
+            <div class="card-body" style="padding:0;"><div class="chart-wrapper chart-small"><canvas id="regStatusChart"></canvas></div></div>
+        </div>
+        <div class="card">
+            <div class="card-header"><span class="card-title">Tools by Priority</span></div>
+            <div class="card-body" style="padding:0;"><div class="chart-wrapper chart-small"><canvas id="regPriorityChart"></canvas></div></div>
+        </div>
+        <div class="card">
+            <div class="card-header"><span class="card-title">Utilization Bands</span><span class="card-subtitle">% of fleet</span></div>
+            <div class="card-body" style="padding:0;"><div class="chart-wrapper chart-small"><canvas id="regUtilChart"></canvas></div></div>
+        </div>
+    </div>
+
+    <div class="tab-group">
+        <button class="tab active" data-tab="all">All Tools</button>
+        <button class="tab" data-tab="operational">Operational</button>
+        <button class="tab" data-tab="pipeline">In Pipeline</button>
+        <button class="tab" data-tab="delayed">Delayed</button>
+        <button class="tab" data-tab="ais">AIS Pending</button>
+    </div>
+    <div class="card">
+        <div class="card-body" style="padding:0;"><div id="registry-table-container"></div></div>
+    </div>
+</div>
+
+<!-- ================================================================ -->
+<!-- PAGE 3 · EARLY ENGAGEMENT                                         -->
+<!-- ================================================================ -->
+<div id="early" class="page">
+    <header class="exec-header">
+        <h1 class="exec-title">Early Engagement Strategy Modeling</h1>
+        <p class="exec-subtitle">Capital avoidance achieved through buy-vs-reuse analysis, tool consolidation, and utilization-based demand modeling. Reuse decisions tracked across all programs.</p>
+    </header>
+
+    <!-- 6 KPIs instead of 4 -->
+    <div class="kpi-grid-6" style="margin-bottom:16px;">
+        <div class="kpi-card success"><div class="kpi-label">Capital Avoided (Total)</div><div class="kpi-value positive" id="early-kpi-avoided">—</div><div class="kpi-context">Reuse decisions</div></div>
+        <div class="kpi-card success"><div class="kpi-label">Tools Reused</div><div class="kpi-value positive" id="early-kpi-reused">—</div><div class="kpi-context">Avg savings per tool</div></div>
+        <div class="kpi-card success"><div class="kpi-label">Portfolio ROI Impact</div><div class="kpi-value positive">+3.8pp</div><div class="kpi-context">vs no-reuse baseline</div></div>
+        <div class="kpi-card"><div class="kpi-label">Avoidance Target</div><div class="kpi-value neutral">$20.0M</div><div class="kpi-context">FY2025 goal</div></div>
+        <div class="kpi-card warning"><div class="kpi-label">Target Gap</div><div class="kpi-value negative" id="early-kpi-gap">—</div><div class="kpi-context">Remaining to target</div></div>
+        <div class="kpi-card"><div class="kpi-label">Avg Payback</div><div class="kpi-value neutral">1.8y</div><div class="kpi-context">Reuse decisions</div></div>
+    </div>
+
+    <!-- Full-width table + right column with 2 stacked charts -->
+    <div class="grid grid-asym">
+        <div class="card">
+            <div class="card-header">
+                <span class="card-title">Buy vs. Reuse Decision Table</span>
+                <span class="card-subtitle">Capital avoidance tracking FY2025</span>
+            </div>
+            <div class="card-body" style="padding:0;">
+                <div style="overflow-x:auto;">
+                    <table class="data-table">
+                        <thead><tr>
+                            <th>Tool ID</th><th>Type</th><th>Site</th>
+                            <th class="numeric">New Cost</th><th class="numeric">Reuse Cost</th>
+                            <th class="numeric">Refurb Cost</th><th>Util %</th>
+                            <th>Decision</th><th class="numeric">Capital Avoided</th>
+                            <th>ROI Impact</th><th>NPV</th><th>Payback</th>
+                        </tr></thead>
+                        <tbody id="early-table-tbody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <!-- RIGHT COLUMN: 2 stacked cards fills the height -->
+        <div style="display:flex;flex-direction:column;gap:16px;">
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">Capital Avoidance Trend</span>
+                    <span class="card-subtitle">Cumulative $M 2025</span>
+                </div>
+                <div class="card-body"><div class="chart-wrapper"><canvas id="capitalAvoidanceChart"></canvas></div></div>
+            </div>
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">Avoidance by Decision Type</span>
+                    <span class="card-subtitle">Reuse vs Consolidate breakdown</span>
+                </div>
+                <div class="card-body"><div class="chart-wrapper"><canvas id="earlyDecisionChart"></canvas></div></div>
+            </div>
+            <div class="card">
+                <div class="card-header"><span class="card-title">Reuse Savings by Site</span></div>
+                <div class="card-body" style="padding:0;" id="early-site-savings">
+                    <table class="data-table">
+                        <thead><tr><th>Site</th><th class="numeric">Avoided</th><th class="numeric">Tools</th><th>Share</th></tr></thead>
+                        <tbody id="early-site-tbody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ================================================================ -->
+<!-- PAGE 4 · CAPITAL FORECAST                                         -->
+<!-- ================================================================ -->
+<div id="capital" class="page">
+    <header class="exec-header">
+        <h1 class="exec-title">Capital Allocation &amp; Forecast Control</h1>
+        <p class="exec-subtitle">Budget vs. actual tracking across programs, tool categories, and sites. Forecast accuracy tracked through monthly reforecast cycle and variance escalation protocol.</p>
+    </header>
+
+    <!-- 6 KPIs -->
+    <div class="kpi-grid-6" style="margin-bottom:16px;">
+        <div class="kpi-card"><div class="kpi-label">Total Budget (FY2025)</div><div class="kpi-value neutral" id="cap-kpi-budget">—</div><div class="kpi-context">Board approved</div></div>
+        <div class="kpi-card success"><div class="kpi-label">Actual Spend</div><div class="kpi-value positive" id="cap-kpi-actual">—</div><div class="kpi-context" id="cap-kpi-pct">—</div></div>
+        <div class="kpi-card success"><div class="kpi-label">Budget Variance</div><div class="kpi-value positive" id="cap-kpi-variance">—</div><div class="kpi-context">YTD</div></div>
+        <div class="kpi-card success"><div class="kpi-label">Forecast Accuracy</div><div class="kpi-value positive">91.3%</div><div class="kpi-context">↑ 4.2pp YoY</div></div>
+        <div class="kpi-card"><div class="kpi-label">Q4 Remaining</div><div class="kpi-value neutral" id="cap-kpi-remaining">—</div><div class="kpi-context">Budget available</div></div>
+        <div class="kpi-card warning"><div class="kpi-label">Over-Budget Tools</div><div class="kpi-value negative" id="cap-kpi-over">—</div><div class="kpi-context">Variance &gt; 0</div></div>
+    </div>
+
+    <!-- 2 charts -->
+    <div class="grid grid-2" style="margin-bottom:16px;">
+        <div class="card">
+            <div class="card-header"><span class="card-title">Budget vs. Actual vs. Forecast</span><span class="card-subtitle">Cumulative $M 2025</span></div>
+            <div class="card-body"><div class="chart-wrapper"><canvas id="budgetActualChart"></canvas></div></div>
+        </div>
+        <div class="card">
+            <div class="card-header"><span class="card-title">Forecast Accuracy Trend</span><span class="card-subtitle">Monthly % 2025</span></div>
+            <div class="card-body"><div class="chart-wrapper"><canvas id="forecastAccuracyChart"></canvas></div></div>
+        </div>
+    </div>
+
+    <!-- 2 tables -->
+    <div class="grid grid-2" style="margin-bottom:16px;">
+        <div class="card">
+            <div class="card-header"><span class="card-title">CapEx Allocation by Program</span></div>
+            <div class="card-body" style="padding:0;">
+                <table class="data-table">
+                    <thead><tr><th>Program</th><th class="numeric">Budget</th><th class="numeric">Actual</th><th class="numeric">Variance</th><th>Progress</th><th>Status</th></tr></thead>
+                    <tbody id="cap-program-tbody"></tbody>
+                </table>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header"><span class="card-title">CapEx by Tool Category</span></div>
+            <div class="card-body" style="padding:0;">
+                <table class="data-table">
+                    <thead><tr><th>Tool Type</th><th class="numeric">Budget</th><th class="numeric">Actual</th><th class="numeric">Variance</th><th># Tools</th><th>Status</th></tr></thead>
+                    <tbody id="cap-type-tbody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Site spend breakdown -->
+    <div class="card">
+        <div class="card-header"><span class="card-title">Capital Spend by Manufacturing Site</span><span class="card-subtitle">Budget · Actual · Variance</span></div>
+        <div class="card-body" style="padding:0;">
+            <table class="data-table">
+                <thead><tr><th>Site</th><th>Region</th><th class="numeric">Budget</th><th class="numeric">Actual</th><th class="numeric">Variance</th><th># Tools</th><th>Avg Lead</th><th>Status</th></tr></thead>
+                <tbody id="cap-site-tbody"></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- ================================================================ -->
+<!-- PAGE 5 · OEM DEPLOYMENT                                           -->
+<!-- ================================================================ -->
+<div id="oem" class="page">
+    <header class="exec-header">
+        <h1 class="exec-title">OEM Coordination &amp; Deployment Control</h1>
+        <p class="exec-subtitle">Vendor performance tracking across OEM partners. Tools delivered, installed, and qualified metrics with on-time delivery rate and lead time monitoring.</p>
+    </header>
+
+    <!-- 6 KPIs -->
+    <div class="kpi-grid-6" style="margin-bottom:16px;">
+        <div class="kpi-card success"><div class="kpi-label">Tools Delivered</div><div class="kpi-value positive" id="oem-kpi-delivered">—</div><div class="kpi-context">of portfolio ordered</div></div>
+        <div class="kpi-card success"><div class="kpi-label">Tools Installed</div><div class="kpi-value positive" id="oem-kpi-installed">—</div><div class="kpi-context">of delivered</div></div>
+        <div class="kpi-card success"><div class="kpi-label">Tools Qualified</div><div class="kpi-value positive" id="oem-kpi-qualified">—</div><div class="kpi-context">of installed</div></div>
+        <div class="kpi-card warning"><div class="kpi-label">On-Time Delivery</div><div class="kpi-value negative" id="oem-kpi-ontime">—</div><div class="kpi-context">Target: ≥92%</div></div>
+        <div class="kpi-card"><div class="kpi-label">Avg Lead Time</div><div class="kpi-value neutral" id="oem-kpi-avg-lead">—</div><div class="kpi-context">Across all vendors</div></div>
+        <div class="kpi-card danger"><div class="kpi-label">Delayed Tools</div><div class="kpi-value danger" id="oem-kpi-delayed">—</div><div class="kpi-context">OEM-caused delays</div></div>
+    </div>
+
+    <!-- OEM table full width -->
+    <div class="card" style="margin-bottom:16px;">
+        <div class="card-header"><span class="card-title">OEM Vendor Performance Dashboard</span><span class="card-subtitle">Full scorecard</span></div>
+        <div class="card-body" style="padding:0;">
+            <div style="overflow-x:auto;">
+                <table class="data-table">
+                    <thead><tr>
+                        <th>OEM Vendor</th><th class="numeric">Ordered</th>
+                        <th class="numeric">Delivered</th><th class="numeric">Installed</th>
+                        <th class="numeric">Qualified</th><th>Avg Lead</th>
+                        <th>On-Time %</th><th>Deploy Risk</th><th>Status</th>
+                    </tr></thead>
+                    <tbody id="oem-table-tbody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2 charts + lead time table -->
+    <div class="grid grid-3" style="margin-bottom:16px;">
+        <div class="card">
+            <div class="card-header"><span class="card-title">On-Time Delivery Rate</span></div>
+            <div class="card-body"><div class="chart-wrapper"><canvas id="oemPerfChart"></canvas></div></div>
+        </div>
+        <div class="card">
+            <div class="card-header"><span class="card-title">Tools by OEM — Volume</span></div>
+            <div class="card-body"><div class="chart-wrapper"><canvas id="oemVolumeChart"></canvas></div></div>
+        </div>
+        <div class="card">
+            <div class="card-header"><span class="card-title">Lead Time Distribution</span><span class="card-subtitle">Weeks by vendor</span></div>
+            <div class="card-body" style="padding:0;">
+                <table class="data-table" id="oem-lead-table">
+                    <thead><tr><th>OEM Vendor</th><th>Avg Lead</th><th>Max Lead</th><th>Risk</th></tr></thead>
+                    <tbody id="oem-lead-tbody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delivery pipeline detail -->
+    <div class="card">
+        <div class="card-header"><span class="card-title">Delivery Pipeline — In-Flight Tools</span><span class="card-subtitle">OEM Build · PO Issued · Delayed</span></div>
+        <div class="card-body" style="padding:0;">
+            <div style="overflow-x:auto;">
+                <table class="data-table">
+                    <thead><tr><th>Tool ID</th><th>Tool Type</th><th>Site</th><th>OEM Vendor</th><th>Status</th><th>Lead Time</th><th>Priority</th><th>Risk</th></tr></thead>
+                    <tbody id="oem-pipeline-tbody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ================================================================ -->
+<!-- PAGE 6 · CAPITALIZATION                                           -->
+<!-- ================================================================ -->
+<div id="capitalization" class="page">
+    <header class="exec-header">
+        <h1 class="exec-title">Capitalization &amp; Financial Governance</h1>
+        <p class="exec-subtitle">AIS capitalization tracking across all tools. Asset lifecycle control per GAAP and internal policy. Depreciation schedules and asset class breakdown.</p>
+    </header>
+
+    <!-- 6 KPIs -->
+    <div class="kpi-grid-6" style="margin-bottom:16px;">
+        <div class="kpi-card success"><div class="kpi-label">Total Capitalized (AIS)</div><div class="kpi-value positive" id="capz-kpi-total-cap">—</div><div class="kpi-context">of actual spend</div></div>
+        <div class="kpi-card success"><div class="kpi-label">Tools AIS Complete</div><div class="kpi-value positive" id="capz-kpi-ais-complete">—</div><div class="kpi-context" id="capz-kpi-total-tools">of total tools</div></div>
+        <div class="kpi-card warning"><div class="kpi-label">Pending Capitalization</div><div class="kpi-value negative" id="capz-kpi-pending">—</div><div class="kpi-context">Q1 2026 target</div></div>
+        <div class="kpi-card"><div class="kpi-label">Depreciation Started</div><div class="kpi-value neutral" id="capz-kpi-depr">—</div><div class="kpi-context">5-7 yr asset life</div></div>
+        <div class="kpi-card"><div class="kpi-label">Annual Depr. Expense</div><div class="kpi-value neutral" id="capz-kpi-annual-depr">—</div><div class="kpi-context">Straight-line avg</div></div>
+        <div class="kpi-card success"><div class="kpi-label">Capitalization Rate</div><div class="kpi-value positive" id="capz-kpi-rate">—</div><div class="kpi-context">% of actuals capitalized</div></div>
+    </div>
+
+    <!-- 2 charts side by side -->
+    <div class="grid grid-2" style="margin-bottom:16px;">
+        <div class="card">
+            <div class="card-header"><span class="card-title">AIS Status Distribution</span></div>
+            <div class="card-body"><div class="chart-wrapper"><canvas id="aisStatusChart"></canvas></div></div>
+        </div>
+        <div class="card">
+            <div class="card-header"><span class="card-title">Asset Value by Class</span><span class="card-subtitle">Capitalized value breakdown</span></div>
+            <div class="card-body"><div class="chart-wrapper"><canvas id="assetClassChart"></canvas></div></div>
+        </div>
+    </div>
+
+    <!-- Full-width tracking table -->
+    <div class="card">
+        <div class="card-header"><span class="card-title">AIS Capitalization Tracking Table</span><span class="card-subtitle">Tool-level financial governance</span></div>
+        <div class="card-body" style="padding:0;">
+            <div id="cap-table-container"></div>
+        </div>
+    </div>
+</div>
+
+<!-- ================================================================ -->
+<!-- PAGE 7 · DEMAND MODELING                                          -->
+<!-- ================================================================ -->
+<div id="forecast" class="page">
+    <header class="exec-header">
+        <h1 class="exec-title">Demand Sensitivity &amp; Equipment Forecast Modeling</h1>
+        <p class="exec-subtitle">Capacity vs. demand modeling for FY2026 equipment planning. Sensitivity analysis across demand scenarios with incremental CapEx and lead-time risk assessments.</p>
+    </header>
+
+    <!-- 4 scenario KPIs -->
+    <div class="kpi-grid-4" style="margin-bottom:16px;">
+        <div class="kpi-card"><div class="kpi-label">Baseline Demand (FY2026)</div><div class="kpi-value neutral">+0%</div><div class="kpi-context" id="fc-kpi-baseline-tools">—</div></div>
+        <div class="kpi-card warning"><div class="kpi-label">Conservative Scenario</div><div class="kpi-value negative">+6%</div><div class="kpi-context">+9 tools · +$4.8M</div></div>
+        <div class="kpi-card warning"><div class="kpi-label">Base Scenario</div><div class="kpi-value negative">+12%</div><div class="kpi-context">+18 tools · +$9.6M</div></div>
+        <div class="kpi-card danger"><div class="kpi-label">Aggressive Scenario</div><div class="kpi-value danger">+20%</div><div class="kpi-context">+32 tools · +$17.2M</div></div>
+    </div>
+
+    <!-- 2 charts -->
+    <div class="grid grid-2" style="margin-bottom:16px;">
+        <div class="card">
+            <div class="card-header"><span class="card-title">Capacity vs. Demand Curve</span><span class="card-subtitle">FY2026 forecast scenarios</span></div>
+            <div class="card-body"><div class="chart-wrapper"><canvas id="demandCurveChart"></canvas></div></div>
+        </div>
+        <div class="card">
+            <div class="card-header"><span class="card-title">CapEx Sensitivity Analysis</span><span class="card-subtitle">$ impact by scenario</span></div>
+            <div class="card-body"><div class="chart-wrapper"><canvas id="sensitivityChart"></canvas></div></div>
+        </div>
+    </div>
+
+    <!-- Scenario table + Type requirements side by side -->
+    <div class="grid grid-2" style="margin-bottom:16px;">
+        <div class="card">
+            <div class="card-header"><span class="card-title">Demand Sensitivity — Tool Requirements</span></div>
+            <div class="card-body" style="padding:0;">
+                <table class="data-table">
+                    <thead><tr>
+                        <th>Scenario</th><th>Demand Δ</th>
+                        <th class="numeric">Tools Req.</th><th class="numeric">Incremental</th>
+                        <th class="numeric">CapEx Impact</th><th>Strategy</th><th>Risk</th>
+                    </tr></thead>
+                    <tbody>
+                        <tr><td style="font-weight:600;">Downside</td><td style="color:var(--accent-red);">-8%</td><td class="numeric" id="fc-down-tools">—</td><td class="numeric" style="color:var(--accent-green);">-16</td><td class="numeric" style="color:var(--accent-green);">-$8.6M</td><td>Defer / Reuse</td><td><span class="badge badge-success">Low</span></td></tr>
+                        <tr><td style="font-weight:600;">Baseline</td><td>+0%</td><td class="numeric" id="fc-row-base-tools">—</td><td class="numeric">0</td><td class="numeric" id="fc-row-base-budget">—</td><td>Execute plan</td><td><span class="badge badge-success">Low</span></td></tr>
+                        <tr><td style="font-weight:600;">Conservative</td><td style="color:var(--accent-amber);">+6%</td><td class="numeric" id="fc-con-tools">—</td><td class="numeric">+9</td><td class="numeric" style="color:var(--accent-amber);">+$4.8M</td><td>Phase buys</td><td><span class="badge badge-warning">Medium</span></td></tr>
+                        <tr><td style="font-weight:600;">Base +12%</td><td style="color:var(--accent-amber);">+12%</td><td class="numeric" id="fc-bas-tools">—</td><td class="numeric">+18</td><td class="numeric" style="color:var(--accent-amber);">+$9.6M</td><td>Accelerate POs</td><td><span class="badge badge-warning">Medium</span></td></tr>
+                        <tr><td style="font-weight:600;">Aggressive</td><td style="color:var(--accent-red);">+20%</td><td class="numeric" id="fc-agg-tools">—</td><td class="numeric">+32</td><td class="numeric" style="color:var(--accent-red);">+$17.2M</td><td>Full deploy</td><td><span class="badge badge-danger">High</span></td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header"><span class="card-title">FY2026 Tool Requirements by Type</span><span class="card-subtitle">Base scenario (+12%) incremental needs</span></div>
+            <div class="card-body" style="padding:0;" id="fc-type-requirements">
+                <table class="data-table">
+                    <thead><tr><th>Tool Type</th><th class="numeric">Current Fleet</th><th class="numeric">+12% Need</th><th class="numeric">Gap</th><th class="numeric">CapEx Est.</th><th>Priority</th></tr></thead>
+                    <tbody id="fc-type-tbody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Site capacity gap analysis -->
+    <div class="card">
+        <div class="card-header"><span class="card-title">Site-Level Capacity Gap Analysis</span><span class="card-subtitle">Baseline vs. aggressive scenario — tools required per site</span></div>
+        <div class="card-body" style="padding:0;">
+            <table class="data-table">
+                <thead><tr><th>Site</th><th>Region</th><th class="numeric">Current</th><th class="numeric">+6% Need</th><th class="numeric">+12% Need</th><th class="numeric">+20% Need</th><th>Constraint</th><th>Action</th></tr></thead>
+                <tbody id="fc-site-tbody"></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- ================================================================ -->
+<!-- PAGE 8 · APPROVALS + CONTROL TOWER                               -->
+<!-- ================================================================ -->
+<div id="approvals" class="page">
+    <header class="exec-header">
+        <h1 class="exec-title">Capital Approval Workflow &amp; Program Control Tower</h1>
+        <p class="exec-subtitle">Capital authorization pipeline, program risk monitoring, NPI build readiness, and deployment alerts. Executive governance and escalation visibility.</p>
+    </header>
+
+    <!-- 6 approval KPIs -->
+    <div class="kpi-grid-6" style="margin-bottom:16px;">
+        <div class="kpi-card danger"><div class="kpi-label">CFO Review</div><div class="kpi-value danger" id="appr-kpi-cfo">—</div><div class="kpi-context">Pending authorization</div></div>
+        <div class="kpi-card warning"><div class="kpi-label">Board Approval</div><div class="kpi-value negative" id="appr-kpi-board">—</div><div class="kpi-context">High-value items</div></div>
+        <div class="kpi-card"><div class="kpi-label">Director Approval</div><div class="kpi-value neutral" id="appr-kpi-director">—</div><div class="kpi-context">In queue</div></div>
+        <div class="kpi-card success"><div class="kpi-label">Auto-Approved</div><div class="kpi-value positive" id="appr-kpi-auto">—</div><div class="kpi-context">&lt;$150K threshold</div></div>
+        <div class="kpi-card success"><div class="kpi-label">Approved YTD</div><div class="kpi-value positive" id="appr-kpi-approved-ytd">—</div><div class="kpi-context">Total authorized</div></div>
+        <div class="kpi-card"><div class="kpi-label">Avg Cycle Time</div><div class="kpi-value neutral">6.4d</div><div class="kpi-context">↓ 2.1d vs FY2024</div></div>
+    </div>
+
+    <!-- Approval pipeline + Control Tower KPIs side by side -->
+    <div class="grid grid-2" style="margin-bottom:16px;">
+        <div class="card">
+            <div class="card-header"><span class="card-title">Capital Approval Pipeline</span><span class="card-subtitle">Active requests requiring decision</span></div>
+            <div class="card-body" style="padding:0;" id="approvals-pipeline"></div>
+        </div>
+        <div class="card">
+            <div class="card-header"><span class="card-title">Program Control Tower — Risk KPIs</span></div>
+            <div class="card-body">
+                <div class="kpi-grid-4" style="margin-bottom:16px;">
+                    <div class="kpi-card danger"><div class="kpi-label">Critical (P1+High)</div><div class="kpi-value danger" id="ct-critical">—</div><div class="kpi-context">P1 + High risk</div></div>
+                    <div class="kpi-card warning"><div class="kpi-label">Delayed Installs</div><div class="kpi-value negative" id="ct-delayed">—</div><div class="kpi-context">Status: Delayed</div></div>
+                    <div class="kpi-card warning"><div class="kpi-label">High Lead Time</div><div class="kpi-value negative" id="ct-high-lead">—</div><div class="kpi-context">&gt;30 week lead</div></div>
+                    <div class="kpi-card"><div class="kpi-label">At Risk Tools</div><div class="kpi-value neutral" id="ct-at-risk">—</div><div class="kpi-context">High + Medium risk</div></div>
+                </div>
+                <!-- Program timeline inside control tower card -->
+                <div style="border-top:1px solid var(--border);padding-top:14px;">
+                    <div style="font-family:var(--font-serif);font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.03em;margin-bottom:12px;">Deployment Progress by Phase</div>
+                    <div class="gantt-row">
+                        <div class="gantt-label">EVT Phase</div>
+                        <div style="flex:1;"><div class="gantt-track"><div class="gantt-bar" id="timeline-evt" style="background:var(--accent-green);width:0%;"></div></div></div>
+                        <span style="font-size:10px;font-weight:600;min-width:36px;text-align:right;" id="timeline-evt-label">—</span>
+                    </div>
+                    <div class="gantt-row">
+                        <div class="gantt-label">DVT Phase</div>
+                        <div style="flex:1;"><div class="gantt-track"><div class="gantt-bar" id="timeline-dvt" style="background:var(--accent-amber);width:0%;"></div></div></div>
+                        <span style="font-size:10px;font-weight:600;min-width:36px;text-align:right;" id="timeline-dvt-label">—</span>
+                    </div>
+                    <div class="gantt-row">
+                        <div class="gantt-label">PVT Phase</div>
+                        <div style="flex:1;"><div class="gantt-track"><div class="gantt-bar" id="timeline-pvt" style="background:var(--accent-blue);width:0%;"></div></div></div>
+                        <span style="font-size:10px;font-weight:600;min-width:36px;text-align:right;" id="timeline-pvt-label">—</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Site risk heatmap + Phase readiness -->
+    <div class="grid grid-2" style="margin-bottom:16px;">
+        <div class="card">
+            <div class="card-header"><span class="card-title">Site Risk Heatmap</span><span class="card-subtitle">Risk distribution by manufacturing site</span></div>
+            <div class="card-body"><div class="chart-wrapper"><canvas id="siteRiskChart"></canvas></div></div>
+        </div>
+        <div class="card">
+            <div class="card-header"><span class="card-title">NPI Phase Build Readiness</span><span class="card-subtitle">EVT / DVT / PVT completion</span></div>
+            <div class="card-body"><div class="chart-wrapper"><canvas id="phaseReadinessChart"></canvas></div></div>
+        </div>
+    </div>
+
+    <!-- Risk Radar Table full width -->
+    <div class="card" style="margin-bottom:16px;">
+        <div class="card-header">
+            <span class="card-title">Risk Radar — Top Priority Tools</span>
+            <span class="card-subtitle">P1 / High Risk / Delayed / Lead &gt;30w — sorted by severity score</span>
+        </div>
+        <div class="card-body" style="padding:0;">
+            <div style="overflow-x:auto;">
+                <table class="data-table">
+                    <thead><tr>
+                        <th>Tool ID</th><th>Tool / Site</th><th>Program</th>
+                        <th>Priority</th><th>Install Status</th><th>Risk</th>
+                        <th>Lead Time</th><th class="numeric">Budget</th><th>Deploy</th>
+                    </tr></thead>
+                    <tbody id="risk-radar-tbody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lead time watchlist + alerts side by side -->
+    <div class="grid grid-2">
+        <div class="card">
+            <div class="card-header"><span class="card-title">Lead Time Watchlist</span><span class="card-subtitle">Top tools by lead time</span></div>
+            <div class="card-body" id="lead-watchlist"></div>
+        </div>
+        <div class="card">
+            <div class="card-header"><span class="card-title">Deployment Alerts</span><span class="card-subtitle">PVT tools &lt;50% deploy or delayed</span></div>
+            <div class="card-body" style="padding:0;" id="deployment-alerts"></div>
+        </div>
+    </div>
+</div>
+
+</main>
+
+<script src="./js/dataLoader.js"></script>
+<script src="./js/filters.js"></script>
+<script src="./js/charts.js"></script>
+<script src="./js/tableRenderer.js"></script>
+<script src="./js/controlTower.js"></script>
+<script src="./js/app.js"></script>
+</body>
+</html>
