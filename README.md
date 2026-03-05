@@ -2,7 +2,7 @@
 
 **FY2025 Semiconductor Equipment Operations Dashboard**
 
-A fully functional, browser-based CapEx equipment program management dashboard for semiconductor manufacturing operations. Data is loaded live from an Excel file — no backend required.
+A fully functional, CapEx equipment program management dashboard for semiconductor manufacturing operations.
 
 ---
 
